@@ -271,6 +271,7 @@ Builder.prototype._compile = function(curFileIdx, callback) {
 }
 
 Builder.prototype.compile = function(callback) {
+	callback = callback || function() {};
   var self = this;
   this.createDir(this.ouputDir);
 
@@ -306,6 +307,7 @@ Builder.prototype.compile = function(callback) {
 }
 
 Builder.prototype.link = function(callback) {
+	callback = callback || function() {};
   var self = this;
   this.createDir(this.ouputDir);
 
@@ -378,4 +380,3 @@ Builder.prototype.trimQuotes = function(str) {
 }
 
 module.exports = Builder;
-

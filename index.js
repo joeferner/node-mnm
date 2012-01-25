@@ -15,26 +15,26 @@ function Builder() {
   this.linker = "g++";
   this.objectFiles = [];
 
-	if(process.platform == 'win32') {
-		if(!process.env["VCINSTALLDIR"] && !process.env["VS100COMNTOOLS"]) {
-			this.fail("You appear to not be running in a Visual Studio prompt.");
-		}
-	}
+  if(process.platform == 'win32') {
+    if(!process.env["VCINSTALLDIR"] && !process.env["VS100COMNTOOLS"]) {
+      this.fail("You appear to not be running in a Visual Studio prompt.");
+    }
+  }
 
-	if(process.platform == 'win32') {
-		this.cppCompiler = "cl.exe";
-		this.linker = "link.exe";
-		this.nodeDir = process.env["NODE_HOME"];
-	} else {
-		this.nodeDir = process.env["NODE_HOME"] || path.join(process.execPath, '..', '..');
-	}
+  if(process.platform == 'win32') {
+    this.cppCompiler = "cl.exe";
+    this.linker = "link.exe";
+    this.nodeDir = process.env["NODE_HOME"];
+  } else {
+    this.nodeDir = process.env["NODE_HOME"] || path.join(process.execPath, '..', '..');
+  }
 
-	if(this.nodeDir) {
-		this.nodeDir = this.trimQuotes(this.nodeDir);
-		this.failIfNotExists(this.nodeDir, 'Node path "%s" not found, try setting NODE_HOME');
-	} else {
-		this.fail("You must specify NODE_HOME.");
-	}
+  if(this.nodeDir) {
+    this.nodeDir = this.trimQuotes(this.nodeDir);
+    this.failIfNotExists(this.nodeDir, 'Node path "%s" not found, try setting NODE_HOME');
+  } else {
+    this.fail("You must specify NODE_HOME.");
+  }
 
   for(var i=0; i<process.argv.length; i++) {
     var arg = process.argv[i];
@@ -45,20 +45,20 @@ function Builder() {
     }
   }
 
-	if(this.showWarnings) {
-		builder.appendUnique('CXXFLAGS', ['-Wall']);
-	}
+  if(this.showWarnings) {
+    builder.appendUnique('CXXFLAGS', ['-Wall']);
+  }
 
-	// process.execPath should equal node.
-	if(process.platform == 'win32') {
-  	this.nodeIncludeDir = path.join(this.nodeDir, 'src');
-  	this.v8IncludeDir = path.join(this.nodeDir, 'deps/v8/include');
-  	this.uvIncludeDir = path.join(this.nodeDir, 'deps/uv/include');
-  	this.nodeLibDir = path.join(this.nodeDir, 'Release');
+  // process.execPath should equal node.
+  if(process.platform == 'win32') {
+    this.nodeIncludeDir = path.join(this.nodeDir, 'src');
+    this.v8IncludeDir = path.join(this.nodeDir, 'deps/v8/include');
+    this.uvIncludeDir = path.join(this.nodeDir, 'deps/uv/include');
+    this.nodeLibDir = path.join(this.nodeDir, 'Release');
   } else {
 
-  	this.nodeIncludeDir = path.join(this.nodeDir, 'include', 'node');
-  	this.nodeLibDir = path.join(this.nodeDir, 'lib');
+    this.nodeIncludeDir = path.join(this.nodeDir, 'include', 'node');
+    this.nodeLibDir = path.join(this.nodeDir, 'lib');
   }
   this.projectDir = path.resolve('.');
   this.buildDir = path.resolve(this.projectDir, 'build');
@@ -66,40 +66,40 @@ function Builder() {
 
   this.appendUnique('CXXFLAGS', '-c');
 
-	if(process.platform == 'win32') {
-	  this.appendUnique('CXXFLAGS', [
-  	  '-nologo',
-  	  '-DWIN32',
-  	  '-D_WINDOWS',
-  	  '-D_WINDLL',
-  	  '-EHsc',
-  	  '-c',
-  	  '-Oi-',
-  	  '-Od',
-  	  '-Gd',
-  	  '-analyze-'
+  if(process.platform == 'win32') {
+    this.appendUnique('CXXFLAGS', [
+      '-nologo',
+      '-DWIN32',
+      '-D_WINDOWS',
+      '-D_WINDLL',
+      '-EHsc',
+      '-c',
+      '-Oi-',
+      '-Od',
+      '-Gd',
+      '-analyze-'
     ]);
     this.appendUnique('LINKFLAGS', [
-	    '-nologo',
-	    '-dll',
-			'-MANIFEST:NO',
-			'-SUBSYSTEM:WINDOWS',
-			'-TLBID:1',
-			'-DYNAMICBASE',
-			'-NXCOMPAT',
-			'-MACHINE:X86',
-	  ]);
-	  this.appendLinkerLibrary('node');
-	  this.appendLinkerLibrary('uv');
-	  this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
-	} else {
-	  this.appendUnique('CXXFLAGS', [
-	    '-D_LARGEFILE_SOURCE',
-	    '-D_FILE_OFFSET_BITS=64',
-	    '-D_GNU_SOURCE',
-	    '-DPIC',
-  	  '-g',
-    	'-fPIC'
+      '-nologo',
+      '-dll',
+      '-MANIFEST:NO',
+      '-SUBSYSTEM:WINDOWS',
+      '-TLBID:1',
+      '-DYNAMICBASE',
+      '-NXCOMPAT',
+      '-MACHINE:X86',
+    ]);
+    this.appendLinkerLibrary('node');
+    this.appendLinkerLibrary('uv');
+    this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
+  } else {
+    this.appendUnique('CXXFLAGS', [
+      '-D_LARGEFILE_SOURCE',
+      '-D_FILE_OFFSET_BITS=64',
+      '-D_GNU_SOURCE',
+      '-DPIC',
+      '-g',
+      '-fPIC'
     ]);
     if (process.platform == 'darwin') {
       this.appendUnique('LINKFLAGS', [
@@ -112,7 +112,7 @@ function Builder() {
         '-shared'
       ]);
     }
-	}
+  }
 
   this.appendLinkerSearchDir(this.nodeLibDir);
 }
@@ -136,23 +136,23 @@ Builder.prototype.consoleRed = function(msg) {
 }
 
 Builder.prototype.appendLinkerLibrary = function(lib) {
-	var flag;
-	if(process.platform == 'win32') {
-		flag = lib + '.lib';
-	} else {
-		flag = '-l' + lib;
-	}
-	this.appendUnique('LINKFLAGS', flag);
+  var flag;
+  if(process.platform == 'win32') {
+    flag = lib + '.lib';
+  } else {
+    flag = '-l' + lib;
+  }
+  this.appendUnique('LINKFLAGS', flag);
 }
 
 Builder.prototype.appendLinkerSearchDir = function(dir) {
-	var flag;
-	if(process.platform == 'win32') {
-		flag = '-LIBPATH:' + dir;
-	} else {
-		flag = '-L' + dir;
-	}
-	this.appendUnique('LINKFLAGS', flag);
+  var flag;
+  if(process.platform == 'win32') {
+    flag = '-LIBPATH:' + dir;
+  } else {
+    flag = '-L' + dir;
+  }
+  this.appendUnique('LINKFLAGS', flag);
 }
 
 Builder.prototype.getFlags = function(flagGroupName) {
@@ -196,10 +196,10 @@ Builder.prototype.getCompilerArgs = function(fileName, outFileName) {
   args = args.concat(flags);
   args.push(fileName);
   if(process.platform == 'win32') {
-  	args.push("-Fo" + outFileName);
+    args.push("-Fo" + outFileName);
   } else {
-  	args.push("-o");
-	  args.push(outFileName);
+    args.push("-o");
+    args.push(outFileName);
   }
   return args;
 }
@@ -210,11 +210,11 @@ Builder.prototype.getLinkerArgs = function(outFileName) {
   var flags = this.getFlags('LINKFLAGS');
   args = args.concat(this.objectFiles);
   if(process.platform == 'win32') {
-  	args.push("-out:" + outFileName);
+    args.push("-out:" + outFileName);
   } else {
-	  args.push("-o");
-	  args.push(outFileName);
-	}
+    args.push("-o");
+    args.push(outFileName);
+  }
   args = args.concat(flags);
   return args;
 }
@@ -266,21 +266,21 @@ Builder.prototype._compile = function(curFileIdx, callback) {
 }
 
 Builder.prototype.compile = function(callback) {
-	callback = callback || function() {};
+  callback = callback || function() {};
   var self = this;
   this.createDir(this.ouputDir);
 
-	// need to append these last to reduce conflicts
-	this.appendUnique('CXXFLAGS', '-I' + this.nodeIncludeDir);
+  // need to append these last to reduce conflicts
+  this.appendUnique('CXXFLAGS', '-I' + this.nodeIncludeDir);
 
-	if(process.platform == 'win32') {
-	  this.appendUnique('CXXFLAGS', [
-	    '-I' + this.v8IncludeDir,
-	    '-I' + this.uvIncludeDir
+  if(process.platform == 'win32') {
+    this.appendUnique('CXXFLAGS', [
+      '-I' + this.v8IncludeDir,
+      '-I' + this.uvIncludeDir
     ]);
-	}
+  }
 
-	// no source then fail
+  // no source then fail
   if(this.sourceFiles.length == 0) {
     callback(new Error("Nothing to compile!"));
     return;
@@ -313,16 +313,16 @@ Builder.prototype.compile = function(callback) {
 }
 
 Builder.prototype.link = function(callback) {
-	callback = callback || function() {};
+  callback = callback || function() {};
   var self = this;
   this.createDir(this.ouputDir);
 
-	// append last to reduce conflict
-	if(process.platform == 'win32') {
-	  this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
-	}
+  // append last to reduce conflict
+  if(process.platform == 'win32') {
+    this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
+  }
 
-	// do the linking
+  // do the linking
   var outFileName = path.resolve(path.join(this.ouputDir, this.target + ".node"));
   this.consoleYellow(util.format(
     "[%d/%d] cxx_link: %s -> %s\r\n",
@@ -368,7 +368,7 @@ Builder.prototype.compileAndLink = function(callback) {
 }
 
 Builder.prototype.failIfNotExists = function(dirName, message) {
-	dirName = path.resolve(dirName);
+  dirName = path.resolve(dirName);
   if(!path.existsSync(dirName)) {
     message = message || "Could not find '%s'.";
     this.fail(message, dirName);
@@ -385,10 +385,10 @@ Builder.prototype.fail = function(message) {
 }
 
 Builder.prototype.trimQuotes = function(str) {
-	if(str) {
-		str = str.replace(/^"/, '').replace(/"$/, '');
-	}
-	return str;
+  if(str) {
+    str = str.replace(/^"/, '').replace(/"$/, '');
+  }
+  return str;
 }
 
 module.exports = Builder;

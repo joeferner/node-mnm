@@ -64,10 +64,7 @@ function Builder() {
   this.buildDir = path.resolve(this.projectDir, 'build');
   this.ouputDir = path.resolve(this.buildDir, 'Release');
 
-  this.appendUnique('CXXFLAGS', [
-    '-c',
-    '-I' + this.nodeIncludeDir
-  ]);
+  this.appendUnique('CXXFLAGS', '-c');
 
 	if(process.platform == 'win32') {
 	  this.appendUnique('CXXFLAGS', [
@@ -80,9 +77,7 @@ function Builder() {
   	  '-Oi-',
   	  '-Od',
   	  '-Gd',
-  	  '-analyze-',
-	    '-I' + this.v8IncludeDir,
-	    '-I' + this.uvIncludeDir
+  	  '-analyze-'
     ]);
     this.appendUnique('LINKFLAGS', [
 	    '-nologo',
@@ -275,6 +270,17 @@ Builder.prototype.compile = function(callback) {
   var self = this;
   this.createDir(this.ouputDir);
 
+	// need to append these last to reduce conflicts
+	this.appendUnique('CXXFLAGS', '-I' + this.nodeIncludeDir);
+
+	if(process.platform == 'win32') {
+	  this.appendUnique('CXXFLAGS', [
+	    '-I' + this.v8IncludeDir,
+	    '-I' + this.uvIncludeDir
+    ]);
+	}
+
+	// no source then fail
   if(this.sourceFiles.length == 0) {
     callback(new Error("Nothing to compile!"));
     return;
@@ -311,6 +317,12 @@ Builder.prototype.link = function(callback) {
   var self = this;
   this.createDir(this.ouputDir);
 
+	// append last to reduce conflict
+	if(process.platform == 'win32') {
+	  this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
+	}
+
+	// do the linking
   var outFileName = path.resolve(path.join(this.ouputDir, this.target + ".node"));
   this.consoleYellow(util.format(
     "[%d/%d] cxx_link: %s -> %s\r\n",

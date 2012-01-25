@@ -20,6 +20,11 @@ builder.target = "mynativemodule_bindings";
 builder.compileAndLink();
 ```
 
+## Realworld Examples
+
+ * [node-java](https://github.com/nearinfinity/node-java) - A node.js to Java bridge.
+ * [node-shark](https://github.com/nearinfinity/node-shark) - Wrapper around libwireshark providing network packet dissection.
+
 # Index
 
 ## builder
@@ -42,7 +47,7 @@ builder.compileAndLink();
 ## builder
 
 <a name="builder_appendLinkerLibrary" />
-**builder.appendLinkerLibrary(libname)**
+### builder.appendLinkerLibrary(libname)
 
 Adds a library to the linker.
 
@@ -55,7 +60,7 @@ __Example__
     builder.appendLinkerLibrary('ssl');
 
 <a name="builder_appendLinkerSearchDir" />
-**builder.appendLinkerSearchDir(dir)**
+### builder.appendLinkerSearchDir(dir)
 
 Adds a library to the linker search path.
 
@@ -68,7 +73,7 @@ __Example__
     builder.appendLinkerSearchDir('/usr/local/lib');
 
 <a name="builder_appendUnique" />
-**builder.appendUnique(flagGroup, flags)**
+### builder.appendUnique(flagGroup, flags)
 
 Adds a flag or flags to a flag group.
 
@@ -83,7 +88,7 @@ __Example__
     builder.appendUnique('CXXFLAGS', ['-Idir1', '-Idir2']);
 
 <a name="builder_appendSourceDir" />
-**builder.appendSourceDir(dir)**
+### builder.appendSourceDir(dir)
 
 Adds a source code directory to the list of compilable items. All files with the extensions cpp, c, cxx will be added to the compile step.
 
@@ -96,7 +101,7 @@ __Example__
     builder.appendSourceDir('./src');
 
 <a name="builder_appendSource" />
-**builder.appendSource(fileName)**
+### builder.appendSource(fileName)
 
 Adds a single source file to the list of compilable items.
 
@@ -109,7 +114,7 @@ __Example__
     builder.appendSource('./src/myModule.cpp');
 
 <a name="builder_compile" />
-**builder.compile([callback])**
+### builder.compile([callback])
 
 Performs the compile.
 
@@ -122,7 +127,7 @@ __Example__
     builder.compile();
 
 <a name="builder_link" />
-**builder.link([callback])**
+### builder.link([callback])
 
 Performs the link.
 
@@ -135,7 +140,7 @@ __Example__
     builder.link();
 
 <a name="builder_compileAndLink" />
-**builder.compileAndLink([callback])**
+### builder.compileAndLink([callback])
 
 Performs the compile and link.
 
@@ -147,13 +152,16 @@ __Example__
 
     builder.compileAndLink();
 
+<a name="cmdline"/>
+## command line
+
 <a name="cmdline_verbose" />
-**verbose -v or --verbose**
+### verbose -v or --verbose
 
 Prints the command lines being executed along with other verbose output.
 
 <a name="cmdline_showWarnings" />
-**-Wall or --showWarnings**
+### -Wall or --showWarnings
 
 Adds the -Wall flag to the compile and prints all compiler warnings.
 

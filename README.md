@@ -17,7 +17,7 @@ builder.appendUnique('CXXFLAGS', ['-Isrc/']);
 builder.appendSourceDir('./src');
 builder.target = "mynativemodule_bindings";
 
-builder.compileAndLink();
+builder.run();
 ```
 
 ## Realworld Examples

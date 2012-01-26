@@ -4,7 +4,7 @@
   "author": "Joe Ferner <joe.ferner@nearinfinity.com>",
   "keywords": ["native", "waf", "node-waf", "compile", "build"],
   "homepage": "https://github.com/nearinfinity/node-mnm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": { "node" : ">=0.6.0" },
   "maintainers": [
     { "name": "Jeff Kunkle", "email": "jeff.kunkle@nearinfinity.com" },

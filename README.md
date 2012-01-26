@@ -24,6 +24,7 @@ builder.run();
 
  * [node-java](https://github.com/nearinfinity/node-java) - A node.js to Java bridge.
  * [node-shark](https://github.com/nearinfinity/node-shark) - Wrapper around libwireshark providing network packet dissection.
+ * [node-oracle](https://github.com/nearinfinity/node-oracle) - node.js driver to connect with an oracle database.
 
 # Index
 

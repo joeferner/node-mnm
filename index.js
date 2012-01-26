@@ -36,19 +36,6 @@ function Builder() {
     this.fail("You must specify NODE_HOME.");
   }
 
-  for(var i=0; i<process.argv.length; i++) {
-    var arg = process.argv[i];
-    if(arg == '-v' || arg == '--verbose') {
-      this.verbose = true;
-    } else if(arg == '-Wall' || arg == '--showWarnings') {
-      this.showWarnings = true;
-    }
-  }
-
-  if(this.showWarnings) {
-    builder.appendUnique('CXXFLAGS', ['-Wall']);
-  }
-
   // process.execPath should equal node.
   if(process.platform == 'win32') {
     this.nodeIncludeDir = path.join(this.nodeDir, 'src');
@@ -91,7 +78,6 @@ function Builder() {
     ]);
     this.appendLinkerLibrary('node');
     this.appendLinkerLibrary('uv');
-    this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
   } else {
     this.appendUnique('CXXFLAGS', [
       '-D_LARGEFILE_SOURCE',
@@ -113,8 +99,6 @@ function Builder() {
       ]);
     }
   }
-
-  this.appendLinkerSearchDir(this.nodeLibDir);
 }
 
 Builder.prototype.consoleGreen = function(msg) {
@@ -229,7 +213,7 @@ Builder.prototype.createDir = function(dirName) {
   }
 }
 
-Builder.prototype.run = function(cmd, args, callback) {
+Builder.prototype._runCommandLine = function(cmd, args, callback) {
   var child = childProcess.spawn(cmd, args);
   child.stdout.on('data', function (data) {
     process.stdout.write(data);
@@ -259,16 +243,23 @@ Builder.prototype._compile = function(curFileIdx, callback) {
   if(this.verbose) {
     console.log(this.cppCompiler, args.join(' '));
   }
-  this.run(this.cppCompiler, args, function(code) {
+  this._runCommandLine(this.cppCompiler, args, function(code) {
     self.currentTask++;
     callback(code);
   });
 }
 
 Builder.prototype.compile = function(callback) {
+	this.currentTask = this.currentTask || 0;
+  this.totalTasks = this.totalTasks || this.sourceFiles.length;
   callback = callback || function() {};
   var self = this;
   this.createDir(this.ouputDir);
+
+	// append this late because it could be set later in the process
+  if(this.showWarnings) {
+    builder.appendUnique('CXXFLAGS', ['-Wall']);
+  }
 
   // need to append these last to reduce conflicts
   this.appendUnique('CXXFLAGS', '-I' + this.nodeIncludeDir);
@@ -313,6 +304,8 @@ Builder.prototype.compile = function(callback) {
 }
 
 Builder.prototype.link = function(callback) {
+	this.currentTask = this.currentTask || 0;
+  this.totalTasks = this.totalTasks || 1;
   callback = callback || function() {};
   var self = this;
   this.createDir(this.ouputDir);
@@ -321,6 +314,7 @@ Builder.prototype.link = function(callback) {
   if(process.platform == 'win32') {
     this.appendLinkerSearchDir(path.join(this.nodeLibDir, 'lib'));
   }
+  this.appendLinkerSearchDir(this.nodeLibDir);
 
   // do the linking
   var outFileName = path.resolve(path.join(this.ouputDir, this.target + ".node"));
@@ -337,7 +331,7 @@ Builder.prototype.link = function(callback) {
     console.log(this.linker, args.join(' '));
   }
 
-  this.run(this.linker, args, function(code) {
+  this._runCommandLine(this.linker, args, function(code) {
     self.currentTask++;
     if(self.verbose) {
       console.log("Done linking.");
@@ -365,6 +359,55 @@ Builder.prototype.compileAndLink = function(callback) {
       callback();
     });
   });
+}
+
+Builder.prototype.run = function(options, callback) {
+	callback = callback || function() {};
+	options = options || {};
+	this.action = null;
+
+	for(var i=0; i<process.argv.length; i++) {
+		var arg = process.argv[i];
+		if(arg == '-v' || arg == '--verbose') {
+			options.verbose = true;
+		} else if(arg == '-Wall' || arg == '--showWarnings') {
+			options.showWarnings = true;
+		} else if(arg == 'build' || arg == 'compile' || arg == 'link' || arg == 'help') {
+			options.action = arg;
+		}
+	}
+
+	this.verbose = options.verbose;
+	this.showWarnings = options.showWarnings;
+	this.action = options.action;
+
+	if(this.action == 'build') {
+		this.compileAndLink(callback);
+	} else if(this.action == 'compile') {
+		this.compile(callback);
+	} else if(this.action == 'link') {
+		this.link(callback);
+	} else if(this.action == 'help') {
+		this.printHelp();
+	} else {
+		this.consoleRed("No action specified\r\n");
+		this.printHelp();
+		callback(null);
+	}
+}
+
+Builder.prototype.printHelp = function() {
+	console.log("mnm [options] action");
+	console.log("");
+	console.log(" Actions");
+	console.log("   build    Compile and link the native module");
+	console.log("   compile  Only run the compiler step.");
+	console.log("   link     Only run the linker step.");
+	console.log("");
+	console.log(" Options");
+	console.log("   -v, --verbose          Print verbose messages.");
+	console.log("   -Wall, --showWarnings  Show all compiler warnings.");
+	console.log("");
 }
 
 Builder.prototype.failIfNotExists = function(dirName, message) {

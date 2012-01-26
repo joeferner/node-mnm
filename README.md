@@ -27,6 +27,10 @@ builder.compileAndLink();
 
 # Index
 
+## command line arguments
+ * [-v](#cmdline_verbose) - Verbose
+ * [-Wall](#cmdline_showWarnings) - Show Warnings
+
 ## builder
  * [appendLinkerLibrary](#builder_appendLinkerLibrary)
  * [appendLinkerSearchDir](#builder_appendLinkerSearchDir)
@@ -36,12 +40,22 @@ builder.compileAndLink();
  * [compile](#builder_compile)
  * [link](#builder_link)
  * [compileAndLink](#builder_compileAndLink)
-
-## command line arguments
- * [-v](#cmdline_verbose) - Verbose
- * [-Wall](#cmdline_showWarnings) - Show Warnings
+ * [run](#builder_run)
 
 # API Documentation
+
+<a name="cmdline"/>
+## command line
+
+<a name="cmdline_verbose" />
+### verbose -v or --verbose
+
+Prints the command lines being executed along with other verbose output.
+
+<a name="cmdline_showWarnings" />
+### -Wall or --showWarnings
+
+Adds the -Wall flag to the compile and prints all compiler warnings.
 
 <a name="builder"/>
 ## builder
@@ -152,18 +166,25 @@ __Example__
 
     builder.compileAndLink();
 
-<a name="cmdline"/>
-## command line
+<a name="builder_run" />
+### builder.run([options], [callback])
 
-<a name="cmdline_verbose" />
-### verbose -v or --verbose
+Run the builder. If no options are specified will use command line arguments to determine what to do.
 
-Prints the command lines being executed along with other verbose output.
+__Arguments__
 
-<a name="cmdline_showWarnings" />
-### -Wall or --showWarnings
+ * options (optional) - An object containing the following options
+  * verbose - true to be verbose
+  * showWarnings - true to show all compiler warnings
+  * action - set to one of the following actions
+   * build - compile and link the project
+   * compile - just perform the compile step.
+   * link - just perform the link step.
+ * callback (optional) - An optional callback to be called when the run is complete.
 
-Adds the -Wall flag to the compile and prints all compiler warnings.
+__Example__
+
+    builder.compileAndLink();
 
 ## License
 

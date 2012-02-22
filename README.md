@@ -13,7 +13,8 @@ $ npm install mnm
 ```javascript
 var builder = new Builder();
 
-builder.appendUnique('CXXFLAGS', ['-Isrc/']);
+builder.appendUnique('CXXFLAGS', ['-fno-builtin']);
+builder.appendIncludeDir('src/');
 builder.appendSourceDir('./src');
 builder.target = "mynativemodule_bindings";
 
@@ -35,6 +36,7 @@ builder.run();
 ## builder
  * [appendLinkerLibrary](#builder_appendLinkerLibrary)
  * [appendLinkerSearchDir](#builder_appendLinkerSearchDir)
+ * [appendIncludeDir](#builder_appendIncludeDir)
  * [appendUnique](#builder_appendUnique)
  * [appendSourceDir](#builder_appendSourceDir)
  * [appendSource](#builder_appendSource)
@@ -86,6 +88,19 @@ __Arguments__
 __Example__
 
     builder.appendLinkerSearchDir('/usr/local/lib');
+
+<a name="builder_appendIncludeDir" />
+### builder.appendIncludeDir(dir)
+
+Adds a path to the list of include search directories.
+
+__Arguments__
+
+ * dir - The directory to add to the search path.
+
+__Example__
+
+    builder.builder_appendIncludeDir('/src');
 
 <a name="builder_appendUnique" />
 ### builder.appendUnique(flagGroup, flags)

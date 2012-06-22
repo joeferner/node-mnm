@@ -3,7 +3,7 @@
   "description": "Make Node Module is a build tool for making native node.js modules.",
   "author": "Joe Ferner <joe.ferner@nearinfinity.com>",
   "keywords": ["native", "waf", "node-waf", "compile", "build"],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "node": ">=0.6.0"
   },
